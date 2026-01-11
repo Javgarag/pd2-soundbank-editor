@@ -162,7 +162,7 @@ namespace PD2SoundBankEditor {
 					writer.Write(PositioningParams2D);
 				}
 				if (Is3DPositioningAvailable > 0) {
-					writer.Write(PositioningParams2D);
+					writer.Write(PositioningParams3D);
 				}
 			}
 
