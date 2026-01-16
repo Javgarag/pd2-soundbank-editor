@@ -21,7 +21,7 @@ namespace PD2SoundBankEditor {
 		public List<Tuple<uint, int>> Playlist = new();
 		public byte[] Unhandled;
 
-		public bool Broken;
+		public uint Broken;
 
 		public RandomSequenceContainer(HircSection section, byte type, BinaryReader reader) : base(section, type, reader) { }
 
@@ -47,10 +47,10 @@ namespace PD2SoundBankEditor {
 			var bytesLeft = amount + dataOffset - (int)reader.BaseStream.Position;
 			if (numChildren * 4 > bytesLeft) {
 				Trace.WriteLine($"{Id} Impossible number of children ({numChildren}) with {bytesLeft} bytes left");
-				Broken = true;
+				Broken = numChildren;
 			}
 
-			if (!Broken) {
+			if (Broken == 0) {
 				for (var i = 0; i < numChildren; i++) {
 					Children.Add(reader.ReadUInt32());
 				}
@@ -82,7 +82,7 @@ namespace PD2SoundBankEditor {
 
 			dataWriter.Write(UnhandledSettings);
 
-			if (!Broken) {
+			if (Broken == 0) {
 				dataWriter.Write((uint)Children.Count);
 				foreach (var child in Children) {
 					dataWriter.Write(child);
@@ -93,6 +93,8 @@ namespace PD2SoundBankEditor {
 					dataWriter.Write(playlistItem.Item1);
 					dataWriter.Write(playlistItem.Item2);
 				}
+			} else {
+				dataWriter.Write(Broken);
 			}
 
 			dataWriter.Write(Unhandled);
